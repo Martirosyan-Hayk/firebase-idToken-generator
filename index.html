@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Firebase ID Token Generator</title>
+
+	<script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
+	<link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
+</head>
+
+<body>
+
+	<div id="firebaseui-auth-container"></div>
+	<input id="custom_token" type="text">
+	<button id="custom_token_btn">Sign in with custom token</button>
+
+	<script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-auth.js"></script>
+	<script src="firebaseConfig.js"></script>
+
+	<script>
+		firebase.initializeApp(firebaseConfig);
+
+
+		const customTokenInput = document.getElementById('custom_token');
+		const customTokenBtn = document.getElementById('custom_token_btn');
+
+		var ui = new firebaseui.auth.AuthUI(firebase.auth());
+		ui.start('#firebaseui-auth-container', {
+			signInOptions: [
+				firebase.auth.EmailAuthProvider.PROVIDER_ID,
+				firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+				firebase.auth.GithubAuthProvider.PROVIDER_ID,
+				firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+				firebase.auth.PhoneAuthProvider.PROVIDER_ID,
+				firebase.auth.TwitterAuthProvider.PROVIDER_ID,
+			],
+		});
+
+
+		customTokenBtn.addEventListener('click', async () => {
+			if (!customTokenInput.value) {
+				alert("please enter custom token")
+			}
+			const customToken = customTokenInput.value;
+
+			try {
+				const userCredential = await firebase.auth().signInWithCustomToken(customToken);
+				console.log("USER CREDENTIAL", userCredential)
+			} catch (e) {
+				console.log('ERR', e)
+			}
+
+		})
+
+
+		firebase.auth().onAuthStateChanged(async user => {
+			if (user) window.location = 'signedin.html';
+		});
+	</script>
+
+</body>
+
+</html>
